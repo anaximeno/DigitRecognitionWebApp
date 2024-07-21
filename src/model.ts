@@ -59,22 +59,22 @@ export class Model {
     }
 
     isLoaded = (): boolean => this.modelWasLoaded;
-    
+
     load = async () => {
         this.eraseButton.disable();
         this.mnet = await tf.loadLayersModel(this.path);
         this.modelWasLoaded = this.mnet !== undefined;
-        this.log.writeLog('Model.load: ' + (this.modelWasLoaded ?
-            "The model was loaded successfully!" :
-            "Error: The model was not loaded, try to reload the page.")
-        );
-        if (this.modelWasLoaded === true) {
+        if (this.modelWasLoaded) {
             // Predict the empty canvas at least one time,
             // because the first prediction is the slowest one.
             this.predict(this.getInputTensor());
             this.canvas.getCanvasElement().style.cursor = 'crosshair';
             this.eraseButton.enable();
+            this.log.writeLog("The model was loaded successfully!");
             this.outputLabel.defaultMessage();
+        } else {
+            this.log.writeLog("Error: The model was not loaded, try to reload the page.");
+            this.outputLabel.write("Digits classification model couldn't be loaded!");
         }
     }
 
